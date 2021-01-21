@@ -1,16 +1,40 @@
 import java.io.*;
-/* import java.util.*; */
+import java.util.*;
+
 
 public class Driver {
     
     public static void main(String[] args) throws IOException {
-        /* FileReader inputfile = new FileReader("inputfile.txt");
-        FileWriter outputfile = new FileWriter("outputfile.txt");
-        BufferedReader reader = new BufferedReader (inputfile);
+      FileReader inputfile = new FileReader("inputfile.txt");
+      BufferedReader reader = new BufferedReader (inputfile);
+        /* FileWriter outputfile = new FileWriter("outputfile.txt");  
         BufferedWriter writer = new BufferedWriter(outputfile); */
 
-        Parser parser = new Parser();
+      ArrayList<String> inputTokens = new ArrayList<>();
+      Parser parser = new Parser();
 
+      String input = reader.readLine(); // original input
+      String inputCopy = null; // input with spaces
+
+      while(input != null){       // add line per line
+
+        /* input = input.concat(" "); */
+
+        inputCopy = input.replace("", " ");
+
+        inputTokens = parser.processedInput(inputCopy);
+
+        System.out.println(inputTokens);
+
+        //insert parser method here
+        
+        input = reader.readLine();
+
+      }
+
+      
+        
+        
 
 
     }

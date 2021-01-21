@@ -3,21 +3,18 @@ import java.util.*;
 
 public class Parser {
 
+    static class Rule {
+      public String LHS;
+      public ArrayList<String> RHS = new ArrayList<>();
+    }
 
-    HashMap<String, Rule> createRules() throws IOException {
+
+    LinkedHashMap<String, Rule> createRules() throws IOException {
         FileReader grammarfile = new FileReader("grammar.txt");
-        FileWriter outputfile = new FileWriter("outputfile.txt");
         BufferedReader reader = new BufferedReader (grammarfile);
-        BufferedWriter writer = new BufferedWriter(outputfile);
 
         String input = reader.readLine();
         ArrayList<String> grammarLine = new ArrayList<>(); 
-
-
-        String definition = ":=";
-        String alternation = "|";
-        String nonTerminal = null;
-
 
         while(input != null){
         
@@ -26,43 +23,106 @@ public class Parser {
             input = reader.readLine();
         }
         
-        HashMap<String, Rule> rules = new HashMap<String, Rule>();
+        LinkedHashMap<String, Rule> rules = new LinkedHashMap<String, Rule>();
 
-        String[] create = grammarLine.get(0).split(" "); // first grammar rule
-        for(int i = 1; i < create.length; i++){
 
-            Rule name = new Rule();
 
-            name.LHS = create[0];
+        String[] grammarTokens = null; 
 
-            create = grammarLine.get(i).split(" ");
+        for(int j = 0; j < grammarLine.size(); j++){
+          grammarTokens = grammarLine.get(j).split(" ");
+
+          /* System.out.println("grammarLine: " + j); */
+
+          
+
+          Rule rule = new Parser.Rule();
+
+          String nonTerminal =  grammarTokens[0].substring(0, grammarTokens[0].length() - 1); //remove the colon
+          rule.LHS = nonTerminal;
+
+          /* System.out.println(nonTerminal); */
+
+          for(int i = 1; i < grammarTokens.length; i++){
+                      
+            rule.RHS.add(grammarTokens[i]);
+
+            /* System.out.println(grammarTokens[i]); */
+            
+          }
+
+          /* for(int i = 0; i < rule.RHS.size(); i++){
+            System.out.println(rule.RHS.get(i));
+          }
+          System.out.println("\n"); */
+
+          
+
+
+          rules.put(nonTerminal, rule);
         }
 
+          
+      
+        reader.close();
         
 
         return rules;
+  }
+
+  public ArrayList<String> processedInput(String inputLine){
+
+    ArrayList<String> inputLineTokens = new ArrayList<>(); //tokens per line
+    char ch;
+
+    int i = 0, start = 0;
+    while(i < inputLine.length()){
+
+      ch = inputLine.charAt(i);
+
+      if(ch == ' ' || ch == '\n'){
+        inputLineTokens.add(inputLine.substring(start, i));
+        start = i+1;
+      }
+      
+      i++;
+
     }
+    inputLineTokens.removeAll(Arrays.asList("",null));
 
 
-    public void parse(String[] input, HashMap<String, Rule> rulesMap) {
+    return inputLineTokens;
 
-    }
+  }
 
 
-    public void expand(Stack stack, String prod) {
+  public void parse(ArrayList<String> inputLineTokens, LinkedHashMap<String, Rule> rulesMap) {
+    Stack<String> stack = new Stack<String>();
+    
+    String firstRule = rulesMap.entrySet().stream().findFirst().get().getKey();
 
-    }
+    /* System.out.println(firstRule); */
 
-    public void performBacktrack(Stack stack, String prod, HashMap<String, Rule> rulesMap){
-        if(stack.isEmpty()) {
-            return;
-        }
 
-        stack.pop();
-        String LHS = rulesMap.findKey(prod);
-    }
 
-}
+  }
+
+
+  /* public void expand(Stack stack, String prod) {
+
+  }
+
+  public void performBacktrack(Stack stack, String prod, HashMap<String, Rule> rulesMap){
+      if(stack.isEmpty()) {
+          return;
+      }
+
+      stack.pop();
+      String LHS = rulesMap.findKey(prod);
+  } */
+   
+
+} 
 
 /* import java.util.Stack;
 import java.io.FileReader;
@@ -80,7 +140,7 @@ public class Parser {
     ArrayList<String> RHS = new ArrayList<>();    
   }
 
-  LinkedHashMap<String, Rule> createRules(){
+  LinkedHashMap<String, Rule> grammarTokensRules(){
     LinkedHashMap<String, Rule> allRules = new LinkedHashMap<String, Rule>();
     BufferedReader bfr = null;
     
